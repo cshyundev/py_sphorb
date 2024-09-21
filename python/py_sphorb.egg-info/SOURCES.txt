@@ -1,0 +1,7 @@
+setup.py
+py_sphorb.egg-info/PKG-INFO
+py_sphorb.egg-info/SOURCES.txt
+py_sphorb.egg-info/dependency_links.txt
+py_sphorb.egg-info/not-zip-safe
+py_sphorb.egg-info/requires.txt
+py_sphorb.egg-info/top_level.txt

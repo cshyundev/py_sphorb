@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: py_sphorb
+Version: 0.1.0
+Summary: A Python binding for the SPHORB feature extraction library
+Author: Your Name
+Author-email: your.email@example.com
+Requires-Python: >=3.6
+Requires-Dist: pybind11>=2.5.0
+Requires-Dist: opencv-python>=4.8.0
+
+A Python package for extracting spherical image features using SPHORB.
