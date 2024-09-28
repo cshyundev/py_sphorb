@@ -1,51 +1,35 @@
-# cmake_minimum_required(VERSION 3.12)
-# project(py_sphorb)
+cmake_minimum_required(VERSION 3.4...3.18)
+project(SPHORB_Project)
 
-# # Find pybind11 and OpenCV
-# find_package(pybind11 REQUIRED)
-# find_package(OpenCV REQUIRED)
+# C++ 표준 설정
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# # Include directories
-# include_directories(${OpenCV_INCLUDE_DIRS} include)
-
-# # Ensure all source files are compiled with -fPIC
-# set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-# # Add source files for SPHORB and other dependencies
-# add_library(SPHORB STATIC src/SPHORB.cpp src/detector.cpp src/pfm.cpp)
-
-# # Build Python bindings
-# add_library(sphorb_bindings MODULE src/sphorb_bindings.cpp)
-# target_link_libraries(sphorb_bindings PRIVATE SPHORB ${OpenCV_LIBS} pybind11::module)
-
-# # Set the output properties for the Python extension module
-# set_target_properties(sphorb_bindings PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}" SUFFIX "${PYTHON_MODULE_EXTENSION}")
-
-cmake_minimum_required(VERSION 3.12)
-project(py_sphorb)
-
-# Find pybind11 and OpenCV
-find_package(pybind11 REQUIRED)
+# 필요한 패키지 찾기
 find_package(OpenCV REQUIRED)
+find_package(pybind11 REQUIRED)
 
-# Include directories
-include_directories(${OpenCV_INCLUDE_DIRS} include)
+# 포함 디렉토리 설정
+include_directories(${OpenCV_INCLUDE_DIRS})
 
-# Ensure all source files are compiled with -fPIC
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# 소스 파일 목록 설정
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/bindings.cpp)
 
-# Add source files for SPHORB and other dependencies
-add_library(SPHORB STATIC src/SPHORB.cpp src/detector.cpp src/pfm.cpp)
+# pybind11 모듈 추가
+pybind11_add_module(sphorb_module MODULE src/bindings.cpp ${SOURCES})
 
-# Build Python bindings
-add_library(sphorb_bindings MODULE src/sphorb_bindings.cpp)
-target_link_libraries(sphorb_bindings PRIVATE SPHORB ${OpenCV_LIBS} pybind11::module)
+# 타겟 포함 디렉토리 설정
+target_include_directories(sphorb_module PRIVATE
+    ${OpenCV_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
-# Set the output properties for the Python extension module
-set_target_properties(sphorb_bindings PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}" SUFFIX "${PYTHON_MODULE_EXTENSION}")
+# 라이브러리 링크
+target_link_libraries(sphorb_module PRIVATE ${OpenCV_LIBS})
 
-# Add main.cpp for testing the SPHORB functionality
-add_executable(sphorb_demo src/main.cpp)
+# 모듈 이름 변경 (필요한 경우)
+set_target_properties(sphorb_module PROPERTIES PREFIX "")
 
-# Link the SPHORB library and OpenCV to the executable
-target_link_libraries(sphorb_demo PRIVATE SPHORB ${OpenCV_LIBS})
+# 라이브러리 출력 디렉토리 설정
+set_target_properties(sphorb_module PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})

@@ -923,8 +923,9 @@ namespace cv
 	
 	        _keypoints.insert(_keypoints.end(), levelKeyPoints.begin(), levelKeyPoints.end());
 	    }
-	
+		
 	    descriptors.copyTo(_descriptors);
+
 	}
 	
 	void SPHORB::operator()(InputArray image, InputArray mask, std::vector<cv::KeyPoint>& keypoints) const
