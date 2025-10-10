@@ -1,0 +1,23 @@
+[build-system]
+requires = ["scikit-build-core>=0.3.3", "pybind11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "pysphorb"
+version = "0.1.0"
+description = "Python bindings for SPHORB feature detector"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.0.0",
+    "opencv-python>=4.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+]
+
+[tool.scikit-build]
+cmake.build-type = "Release"
+build.verbose = true
+wheel.install-dir = "pysphorb"
