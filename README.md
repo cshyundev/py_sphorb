@@ -10,15 +10,19 @@ This package provides Python bindings for the original C++ implementation, enabl
 
 ## Installation
 
-### Requirements
+### From PyPI (Recommended)
 
-- Python >= 3.11
-- NumPy >= 2.0
-- OpenCV >= 4.0
-- CMake >= 3.15
-- C++17 compatible compiler
+```bash
+pip install pysphorb
+```
+
+Pre-built wheels are available for:
+- Python 3.11, 3.12, 3.13, 3.14
+- Linux x86_64 (manylinux_2_35)
 
 ### From Source
+
+For other platforms or custom builds:
 
 ```bash
 pip install git+https://github.com/cshyundev/py_sphorb.git
@@ -31,6 +35,14 @@ git clone https://github.com/cshyundev/py_sphorb.git
 cd py_sphorb
 pip install .
 ```
+
+#### Build Requirements
+
+- Python >= 3.11
+- NumPy >= 2.0
+- OpenCV >= 4.0
+- CMake >= 3.15
+- C++17 compatible compiler
 
 ## Quick Start
 
@@ -178,8 +190,4 @@ For commercial licensing inquiries, please contact the original authors.
 
 - **Original Algorithm & C++ Implementation**: Qiang Zhao (qiangzhao@tju.edu.cn), Tianjin University
 - **Python Bindings**: Created using [pybind11](https://github.com/pybind/pybind11)
-- **Contributors**: [Your contributions are welcome!](https://github.com/cshyundev/py_sphorb/issues)
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.

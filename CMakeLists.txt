@@ -30,7 +30,8 @@ pybind11_add_module(pysphorb
 # Link OpenCV libraries
 target_link_libraries(pysphorb PRIVATE ${OpenCV_LIBS})
 
-# Set output directory
-set_target_properties(pysphorb PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
+# Install the extension module (scikit-build-core will handle placement in wheel)
+install(TARGETS pysphorb LIBRARY DESTINATION .)
+
+# Install data files (maintaining src/Data structure)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/Data DESTINATION src)
