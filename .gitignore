@@ -79,3 +79,9 @@ _skbuild/
 
 # macOS
 .DS_Store
+
+# images
+images/
+
+# Development symlink for editable install
+pysphorb/src

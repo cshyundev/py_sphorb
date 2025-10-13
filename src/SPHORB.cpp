@@ -436,11 +436,19 @@ static void computeDescriptors(const Mat& image, vector<KeyPoint>& keypoints , M
 	}
 }
 // map the keypoint of each level of the five part of the storage grid to the original spherical image
-static void mappingKeypoint(const Mat& img, vector<cv::KeyPoint>& kps, int edge, const float* geoinfo, int level)
+static void mappingKeypoint(const Mat& img, vector<cv::KeyPoint>& kps, int edge, const float* geoinfo, int level, int startLevel, const Size& originalSize)
 {
 
-	float scale = float(cells[0])/float(cells[level]);
+	// Scale relative to the start level, not always level 0
+	float scale = float(cells[startLevel])/float(cells[level]);
 	int pWidth = cells[level]*2+1;
+
+	// Calculate scaling factors from internal size to original image size
+	// Use startLevel as the base resolution
+	float internalWidth = float(cells[startLevel] * 5);
+	float internalHeight = float(cells[startLevel] * 5 / 2);
+	float scaleToOriginalX = float(originalSize.width) / internalWidth;
+	float scaleToOriginalY = float(originalSize.height) / internalHeight;
 
 	float pcos[5] = {cos(0.0), cos(2*CV_PI/5), cos(4*CV_PI/5), cos(6*CV_PI/5), cos(8*CV_PI/5)};
 	float psin[5] = {sin(0.0), sin(2*CV_PI/5), sin(4*CV_PI/5), sin(6*CV_PI/5), sin(8*CV_PI/5)};
@@ -468,9 +476,9 @@ static void mappingKeypoint(const Mat& img, vector<cv::KeyPoint>& kps, int edge,
 		float panoX = phi / c;
 		float panoY = theta / c;
 
-		kps[i].size = 31.0f*scale;
-		kps[i].pt.x = panoX*scale;
-		kps[i].pt.y = panoY*scale;
+		kps[i].size = 31.0f*scale*scaleToOriginalX;
+		kps[i].pt.x = panoX*scale*scaleToOriginalX;
+		kps[i].pt.y = panoY*scale*scaleToOriginalY;
 		kps[i].class_id = -1;
 		kps[i].octave = level;
 	}
@@ -783,13 +791,32 @@ void SPHORB::operator()(InputArray _image, InputArray _mask, vector<KeyPoint>& _
     if( temp.type() != CV_8UC1 )
         cvtColor(_image, temp, cv::COLOR_BGR2GRAY);
 
+	// Find the optimal start level to avoid upscaling
+	int startLevel = 0;
+	for (int l = 0; l < levels; l++) {
+		int targetWidth = cells[l] * 5;
+		int targetHeight = cells[l] * 5 / 2;
+
+		// Find first level where target size <= input size (no upscaling needed)
+		if (targetWidth <= temp.cols && targetHeight <= temp.rows) {
+			startLevel = l;
+			break;
+		}
+	}
+
+	// Ensure we don't exceed nlevels
+	if (startLevel >= nlevels) {
+		startLevel = nlevels - 1;
+	}
+
 	// compute how many features should be detected on every scale space level
-	vector<int> nfeaturesPerLevel(nlevels);
+	int actualLevels = nlevels - startLevel;
+	vector<int> nfeaturesPerLevel(nlevels, 0);  // Initialize all to 0
 	float factor = (float)(1.0 / pow(2.0, 1/3.0));
-	float ndesiredFeaturesPerScale = nfeatures*(1 - factor)/(1 - (float)pow((double)factor, (double)nlevels));
+	float ndesiredFeaturesPerScale = nfeatures*(1 - factor)/(1 - (float)pow((double)factor, (double)actualLevels));
 
 	int sumFeatures = 0;
-	for( int level = 0; level < nlevels-1; level++ )
+	for( int level = startLevel; level < nlevels-1; level++ )
 	{
 		nfeaturesPerLevel[level] = cvRound(ndesiredFeaturesPerScale);
 		sumFeatures += nfeaturesPerLevel[level];
@@ -869,7 +896,7 @@ void SPHORB::operator()(InputArray _image, InputArray _mask, vector<KeyPoint>& _
 
 		descriptors.push_back(tDesc);
 
-		mappingKeypoint(image, levelKeyPoints, SFAST_EDGE + SPHORB_EDGE, geoinfos[l], l);
+		mappingKeypoint(image, levelKeyPoints, SFAST_EDGE + SPHORB_EDGE, geoinfos[l], l, startLevel, temp.size());
 
 		_keypoints.insert(_keypoints.end(), levelKeyPoints.begin(), levelKeyPoints.end());
 
