@@ -46,7 +46,16 @@ namespace cv
 		int barrier;
 		int nfeatures;
 		int nlevels;
-	
+
+		// Instance-specific data (previously global)
+		std::vector<float*> geoinfos;
+		std::vector<Mat> maskes;
+		std::vector<std::vector<float*>> imgInfos;
+		int levels;
+
+		void initSORB();
+		void uninitSORB();
+
 		void computeImpl( const Mat& image, vector<KeyPoint>& keypoints, Mat& descriptors ) const;
 		void detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask=Mat() ) const;	};
 

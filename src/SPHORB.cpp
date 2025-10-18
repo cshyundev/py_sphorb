@@ -22,15 +22,10 @@
 #include "detector.h"
 namespace cv
 {
-	std::vector<float*> geoinfos;
-	std::vector<Mat> maskes;
-	std::vector<vector<float*> > imgInfos;
-
 	const int cells[] = {256, 204, 162, 128, 102, 80, 64};
-	int levels;
 
 	// load the precomputed information
-	static void initSORB()
+	void SPHORB::initSORB()
 	{
 		levels = sizeof(cells) / sizeof(cells[0]);
 		for (int i=0;i<levels;i++)
@@ -69,7 +64,7 @@ namespace cv
 		}
 	}
 
-	static void uninitSORB()
+	void SPHORB::uninitSORB()
 	{
 		for (size_t i=0;i<geoinfos.size();i++)
 		{
