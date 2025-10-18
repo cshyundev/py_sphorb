@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from .pysphorb import SPHORB as _SPHORB, ratioTest
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 # Get the package directory
 _package_dir = Path(__file__).parent
